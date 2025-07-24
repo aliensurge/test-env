@@ -281,6 +281,41 @@ Test with curl to verify X-Cache-Status (HIT or MISS)
 
 ---
 
+## NGINX Logging
+
+NGINX logs are vital for monitoring traffic, troubleshooting errors, and analyzing access patterns.
+
+### Log File Locations
+
+By default, NGINX stores its logs in:
+
+- **Access Logs:**  
+  `/var/log/nginx/access.log`  
+  Contains details about incoming HTTP requests, including status codes, IP addresses, response times, etc.
+
+- **Error Logs:**  
+  `/var/log/nginx/error.log`  
+  Logs issues such as misconfigurations, backend failures, or permission errors.
+
+### Log Levels
+
+Error logging can be set to various severity levels:
+
+- `debug`
+- `info`
+- `notice`
+- `warn`
+- `error`
+- `crit`
+- `alert`
+- `emerg`
+
+Monitor logs in real-time using:
+```bash
+   tail -f /var/log/nginx/access.log
+   ```
+---
+
 ## Final Outputs
 
 - `nginx.conf` with full reverse proxy, auth, caching, rate limit, and load balancing
