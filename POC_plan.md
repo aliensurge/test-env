@@ -5,16 +5,17 @@ Understand and validate how each feature works across the Uptycs architecture by
 
 
 ---
-## Suggested Execution Plan
+## Execution Plan
 
-| Phase | Description                               | Duration | Owner     |
-|-------|-------------------------------------------|----------|-----------|
-| 1     | Prepare lab environment (test VMs, creds) | 1 week   | Infra/SRE |
-| 2     | POC NGINX, Kafka                          | 1 week   | Platform  |
-| 3     | POC Consumers, Rules, and Alerts          | 1–2 weeks| Security  |
-| 4     | POC Presto/Spark + File Store             | 1 week   | Data Team |
-| 5     | POC Databases + Monitoring                | 1 week   | Ops/Infra |
-| 6     | Debrief + Document Findings               | 3 days   | All       |
+| Phase | Description                               |
+|-------|-------------------------------------------|
+| 1     | Prepare lab environment (test VMs, creds) |
+| 2     | POC NGINX, Kafka                          |
+| 3     | POC Consumers, Rules, and Alerts          |
+| 4     | POC Presto/Spark + File Store             |
+| 5     | POC Databases + Monitoring                |
+| 6     | Debrief + Document Findings               |
+
 
 ---
 
@@ -25,13 +26,9 @@ Understand and validate how each feature works across the Uptycs architecture by
 Validate how ingress traffic is routed, terminated, and load balanced.
 
 **POC Tasks:**
-- Deploy NGINX with dummy TLS certs and simulate agent/UI/API traffic.
-- Observe how requests are routed to frontend pods (e.g., `/login`, `/api/v1/queries`).
-- Test health checks and failure handling.
-
-**Success Criteria:**
-- All simulated traffic reaches target services correctly.
-- NGINX logs show accurate reverse proxy behavior.
+- Deploy NGINX and simulate agent/UI/API traffic.
+- Observe how requests are routed to frontend pods (e.g. `/login`, `/api/v1/queries`).
+- Test reverse proxy, load balancing, traffic routing, caching
 
 ---
 
