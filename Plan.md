@@ -1,11 +1,11 @@
 #  Uptycs Architecture – POC Plan by Component
 
-## 🎯 Goal
+## Goal
 Understand and validate how each feature works across the Uptycs architecture by simulating real-world behaviors, configurations, and data flows in a controlled test environment (or staging replica).
 
----
 
-## 🧩 Suggested Execution Plan
+---
+## Suggested Execution Plan
 
 | Phase | Description                               | Duration | Owner     |
 |-------|-------------------------------------------|----------|-----------|
@@ -18,7 +18,7 @@ Understand and validate how each feature works across the Uptycs architecture by
 
 ---
 
-## 🗂️ Component POC Breakdown
+## Component POC Breakdown
 
 ### 1. **NGINX Nodes**
 **Objective:**  
