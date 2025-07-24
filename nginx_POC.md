@@ -133,7 +133,7 @@ Run these scripts with python and check for traffic on another terminal
 
 ### Step 3: Reverse Proxy Configuration
 
-Update `/etc/nginx/nginx.conf` or your custom site config:
+Update `/etc/nginx/nginx.conf` to include mock services:
 
 ```nginx
 location /ui {
@@ -149,7 +149,7 @@ location /login {
 }
 ```
 
-Validate with `curl http://<vm-ip>/ui`, `/api`, and `/login`.
+Validate with `curl http://localhost/ui`, `/api`, and `/login`.
 
 UI service
 
@@ -183,15 +183,16 @@ Login service
    ```
 
 3. Update Flask service:
+
    ```python
    @app.route('/secure')
    def secure():
        return "Secure service is live."
    ```
 
-4. Test:
+5. Test scenarios:
    ```bash
-   curl -u testuser http://<vm-ip>/secure
+   curl -u testuser http://localhost/secure
    ```
 Expected results:
 
@@ -222,7 +223,7 @@ for i in {1..20}; do curl -s -o /dev/null -w "%{http_code}
 " http://<vm-ip>/api; done
 ```
 
-Expected: HTTP `200` initially, followed by `503` for rate-limited requests.
+Expected: HTTP `200` initially, followed by `503` for rate limited requests.
 
 ![Screenshot](images/nginx_poc_images/image_8.png)
 
@@ -233,13 +234,13 @@ Expected: HTTP `200` initially, followed by `503` for rate-limited requests.
 Start two backend services on ports 5005 and 5006:
 
 ```nginx
-upstream backend {
+upstream secure_backend {
     server localhost:5005;
     server localhost:5006;
 }
 
 location /lb {
-    proxy_pass http://backend;
+    proxy_pass http://secure_backend;
 }
 ```
 ![Screenshot](images/nginx_poc_images/image_26.png)
@@ -275,7 +276,7 @@ location /secure {
     proxy_pass http://localhost:5005;
 }
 ```
-Test with curl to /secure 
+Test with curl to verify X-Cache-Status (HIT or MISS)
 
 ![Screenshot](images/nginx_poc_images/image_11.png)
 
