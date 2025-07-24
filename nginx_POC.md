@@ -7,7 +7,7 @@ Demonstrate NGINX use cases simulating the role of an edge reverse proxy in Upty
 
 ---
 
-## 🔧 Purpose in Architecture
+## Purpose in Architecture
 
 In the Uptycs architecture, NGINX nodes are deployed outside the Kubernetes cluster on virtual machines. They handle incoming traffic and route requests to internal services such as:
 
@@ -24,22 +24,28 @@ In the Uptycs architecture, NGINX nodes are deployed outside the Kubernetes clus
 Install and enable NGINX as a systemd service on a Linux VM
 
 ```bash
-sudo install nginx -y       # or apt install nginx -y
+sudo apt install nginx -y
 sudo systemctl enable nginx
 sudo systemctl start nginx
 ```
 
-![Screenshot](images/imgae_12.png)
+![Screenshot](images/nginx_poc_images/image_12.png)
 
 Check configuration syntax before applying changes:
 
 ```bash
 sudo nginx -t
 ```
+Enable port forwarding to check frontend 
+
+```
+ssh -L 8080:localhost:80 syed-ibm@10.241.64.24
+```
+![Screenshot](images/nginx_poc_images/image_28.png)
 
 ---
 
-### ✅ Step 2: Create Mock Backend Services
+### Step 2: Create Mock Backend Services
 
 Simulate backend services using Flask:
 
@@ -48,24 +54,84 @@ Simulate backend services using Flask:
 | UI       | `/ui`    | 5001  |
 | API      | `/api`   | 5002  |
 | Login    | `/login` | 5003  |
+| Secure   | `/secure`| 5005, 5006 |
 
-Example Flask template:
-
+ui_service.py
 ```python
 from flask import Flask
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "Service is live."
+    return "<h1>NGINX is proxying to UI Service!</h1>"
 
 if __name__ == '__main__':
-    app.run(port=5001)  # Change port per service
+    app.run(port=5001)
 ```
 
+api_service.py
+```python
+from flask import Flask, jsonify
+app = Flask(__name__)
+
+@app.route('/api')
+def api():
+    return jsonify({"message": "API Service Active"})
+
+if __name__ == '__main__':
+    app.run(port=5002)
+```
+login_service.py
+```python
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/login')
+def login():
+    return "Login service is live."
+
+if __name__ == '__main__':
+    app.run(port=5003)
+```
+secure_service.py
+```python
+from flask import Flask, make_response
+import time
+
+app = Flask(__name__)
+
+@app.route('/secure')
+def secure():
+    response = make_response(f"Secure service 1 - {time.time()}")
+    response.headers["Cache-Control"] = "public, max-age=30"
+    return response
+
+if __name__ == '__main__':
+    app.run(port=5005)
+```
+secure_service2.py
+```python
+from flask import Flask, make_response
+import time
+
+app = Flask(__name__)
+
+@app.route('/secure')
+def secure():
+    response = make_response(f"Secure service 1 - {time.time()}")
+    response.headers["Cache-Control"] = "public, max-age=30"
+    return response
+
+if __name__ == '__main__':
+    app.run(port=5006)
+```
+
+Run these scripts with python and check for traffic on another terminal
+
+![Screenshot](images/nginx_poc_images/image_23.png)
 ---
 
-### ✅ Step 3: Reverse Proxy Configuration
+### Step 3: Reverse Proxy Configuration
 
 Update `/etc/nginx/nginx.conf` or your custom site config:
 
@@ -85,9 +151,21 @@ location /login {
 
 Validate with `curl http://<vm-ip>/ui`, `/api`, and `/login`.
 
+UI service
+
+![Screenshot](images/nginx_poc_images/image_20.png)
+
+API service
+
+![Screenshot](images/nginx_poc_images/image_6.png)
+
+Login service
+
+![Screenshot](images/nginx_poc_images/image_1.png)
+
 ---
 
-### ✅ Step 4: Add Basic Auth to `/secure`
+### Step 4: Add Basic Auth to `/secure`
 
 1. Install `htpasswd` utility:
    ```bash
@@ -115,10 +193,18 @@ Validate with `curl http://<vm-ip>/ui`, `/api`, and `/login`.
    ```bash
    curl -u testuser http://<vm-ip>/secure
    ```
+Expected results:
+
+![Screenshot](images/nginx_poc_images/image_25.png)
+
+Results if authentication fails:
+
+![Screenshot](images/nginx_poc_images/image_18.png)
+
 
 ---
 
-### ✅ Step 5: Add Rate Limiting
+### Step 5: Add Rate Limiting
 
 ```nginx
 limit_req_zone $binary_remote_addr zone=one:10m rate=10r/s;
@@ -138,30 +224,39 @@ for i in {1..20}; do curl -s -o /dev/null -w "%{http_code}
 
 Expected: HTTP `200` initially, followed by `503` for rate-limited requests.
 
+![Screenshot](images/nginx_poc_images/image_8.png)
+
 ---
 
-### ✅ Step 6: Load Balancing
+### Step 6: Load Balancing
 
-Start two backend services on ports 6001 and 6002:
+Start two backend services on ports 5005 and 5006:
 
 ```nginx
 upstream backend {
-    server localhost:6001;
-    server localhost:6002;
+    server localhost:5005;
+    server localhost:5006;
 }
 
 location /lb {
     proxy_pass http://backend;
 }
 ```
+![Screenshot](images/nginx_poc_images/image_26.png)
 
 Verify round-robin behavior using `curl` loop.
 
+```bash
+for i in {1..10}; do curl -u testuser:1234 http://localhost/secure; echo; done
+```
+
+![Screenshot](images/nginx_poc_images/image_11.png)
+
 ---
 
-### ✅ Step 7: Caching
+### Step 7: Caching
 
-1. Add headers in Flask:
+1. Add headers in Flask in secure_service.py
 
 ```python
 @app.route('/secure')
@@ -180,10 +275,13 @@ location /secure {
     proxy_pass http://localhost:5005;
 }
 ```
+Test with curl to /secure 
+
+![Screenshot](images/nginx_poc_images/image_11.png)
 
 ---
 
-## ✅ Final Outputs
+## Final Outputs
 
 - `nginx.conf` with full reverse proxy, auth, caching, rate limit, and load balancing
 - Screenshots of mock service hits
@@ -193,7 +291,4 @@ location /secure {
 
 ---
 
-## 📌 Notes
-
-- This testbed simulates Uptycs' real NGINX role in handling edge traffic.
-- It can be extended with TLS, monitoring (e.g., Prometheus + nginx-exporter), or Docker Compose for automation.
+## Notes
