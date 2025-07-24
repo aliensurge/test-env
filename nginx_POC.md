@@ -3,7 +3,7 @@
 
 ## Objective
 
-Demonstrate NGINX use cases simulating the role of an edge reverse proxy in Uptycs Cloud environment. This includes TLS termination, HTTP/S routing, load balancing, basic authentication, caching, and rate limiting.
+Demonstrate NGINX use cases simulating the role of an edge reverse proxy in Uptycs Cloud environment. This includes support for HTTP/S routing, load balancing, basic authentication, caching, and rate limiting.
 
 ---
 
