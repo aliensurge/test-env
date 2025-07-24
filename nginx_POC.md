@@ -198,10 +198,9 @@ Expected results:
 
 ![Screenshot](images/nginx_poc_images/image_25.png)
 
-Results if authentication fails:
+Results if authentication fails (e.g wrong password):
 
 ![Screenshot](images/nginx_poc_images/image_18.png)
-
 
 ---
 
@@ -216,7 +215,7 @@ location /api {
 }
 ```
 
-Run stress test:
+Run stress test (limit set to 10. For loop will run 20 back to back calls) :
 
 ```bash
 for i in {1..20}; do curl -s -o /dev/null -w "%{http_code}
@@ -231,7 +230,7 @@ Expected: HTTP `200` initially, followed by `503` for rate limited requests.
 
 ### Step 6: Load Balancing
 
-Start two backend services on ports 5005 and 5006:
+Start two secure backend services on ports 5005 and 5006:
 
 ```nginx
 upstream secure_backend {
@@ -239,7 +238,7 @@ upstream secure_backend {
     server localhost:5006;
 }
 
-location /lb {
+location /secure {
     proxy_pass http://secure_backend;
 }
 ```
