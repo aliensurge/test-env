@@ -271,9 +271,5 @@ Sample output:
 
 ---
 
-## ✅ Summary
-
-This POC simulates how a security analytics platform like Uptycs could apply real-time scoring logic to streaming threat data. Apache Spark acts as a stream processor that consumes logs from Kafka, enriches them with logic, and produces actionable data back into the Kafka pipeline.
-
-📅 Generated on August 06, 2025
+This POC simulates how a security analytics platform like Uptycs could apply real-time scoring logic to streaming threat data. Apache Spark acts as a stream processor that consumes logs from Kafka, enriches them with logic, and produces actionable data back into the Kafka pipeline
 
