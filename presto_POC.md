@@ -156,7 +156,7 @@ Paste in sample messages:
 {"host": "endpoint04", "threat": "brute_force_attempt", "severity": "critical"}
 ```
 
-Press `Ctrl+D` when done.
+Here, we will be using the current data created during the Kafka POC. 
 
 ---
 
