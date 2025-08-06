@@ -277,7 +277,7 @@ location /secure {
 ```
 Test with curl to verify X-Cache-Status (HIT or MISS)
 
-![Screenshot](images/nginx_poc_images/image_11.png)
+![Screenshot](images/nginx_poc_images/image_15.png)
 
 ---
 
