@@ -180,5 +180,10 @@ Malformed JSONs will be caught:
 
 This demonstrates that Python can successfully read messages from Kafka topics. A practical example would be implementing rule-based matching, where specific tags or keywords are defined in Python to detect relevant events. Once a match is found, the data can either be published to a new Kafka topic (e.g., matched_hits), routed to a storage destination such as an S3 bucket or HDFS, or sent to another processing endpoint.
 
+---
 
+Next POC:  Simulate Query Flow with Presto
+
+Where: Data Flows to Presto
+Test: Output Kafka data to a CSV/Parquet file → ingest into Presto or SQLite → run queries
 
