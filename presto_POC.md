@@ -2,9 +2,7 @@
 
 ## What is Presto?
 
-[Presto](https://prestodb.io/) is an open-source, distributed SQL query engine designed for fast analytical queries over large-scale datasets. It supports querying data from multiple sources (like Hive, MySQL, PostgreSQL, S3, Kafka, and more) using standard ANSI SQL.
-
-Originally developed by Facebook, Presto is optimized for interactive query workloads and is capable of querying data from multiple sources in a single query — making it ideal for modern data platforms.
+Presto is an open-source, distributed SQL query engine designed for fast analytical queries over large-scale datasets. It supports querying data from multiple sources (like Hive, MySQL, PostgreSQL, S3, Kafka, and more) using standard ANSI SQL.
 
 ---
 
