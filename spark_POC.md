@@ -1,8 +1,9 @@
-# ⚡ Spark POC for Uptycs Architecture
+
+# Spark POC for Uptycs Architecture
 
 ## What is Apache Spark?
 
-[Apache Spark](https://spark.apache.org/) is an open-source distributed processing system used for big data workloads. It provides a unified analytics engine for large-scale data processing with built-in modules for SQL, streaming, machine learning, and graph processing.
+Apache Spark is an open-source distributed processing system used for big data workloads. It provides a unified analytics engine for large-scale data processing with built-in modules for SQL, streaming, machine learning, and graph processing.
 
 ---
 
@@ -26,22 +27,7 @@ In the Uptycs architecture, Spark can be used to:
 
 ---
 
-## Phase 1: Spark Local Setup and Basic Job Execution
-
-We begin by setting up Apache Spark in standalone mode and running a basic Python-based Spark job to simulate a telemetry analytics workload.
-
----
-
-## Prerequisites
-
-- Java 8 or higher (OpenJDK)
-- Python 3
-- Apache Spark (latest version)
-- Optional: Kafka (for future integration)
-
----
-
-## 🛠️ Setup Instructions
+## Setup Instructions
 
 ### Step 1: Install Java
 
@@ -84,11 +70,11 @@ You should see the Spark shell prompt indicating successful setup.
 
 ---
 
-## 🚀 Run a Sample Spark Job (Python)
+## Run a Sample Spark Job (Python)
 
 ### Step 5: Write a Sample Spark Job
 
-Save this as `sample_spark_job.py`:
+sample_spark_job.py:
 
 ```python
 from pyspark.sql import SparkSession
@@ -140,12 +126,18 @@ Expected output:
 +---------+-----+
 ```
 
-This demonstrates Spark’s ability to process and aggregate telemetry logs in-memory using SQL-like syntax.
-
 ---
 
-✅ Next Steps:
+## Summary
 
-- Integrate Spark Streaming with Kafka (real-time ingestion)
-- Save Spark output to Parquet or push to downstream systems (e.g., S3, PostgreSQL)
-- Build a Spark ML pipeline for anomaly detection
+Apache Spark is an incredibly powerful tool for large-scale data processing. In the context of Uptycs, it can help transform, aggregate, and analyze telemetry logs at scale.
+
+This POC demonstrates how Spark can:
+- Simulate a telemetry dataset
+- Execute distributed queries using Spark SQL
+- Deliver aggregated insights for threat severity analytics
+
+Future enhancements can include:
+- Real-time streaming with Kafka
+- Output to persistent storage like S3 or Parquet
+- Use MLlib for pattern or anomaly detection
