@@ -53,7 +53,6 @@ Kafka nodes are typically deployed as part of the **streaming layer**.
     brokerid=3
     port=9094
     log.dir=/tmp/kafka-logs-3
-
     ```
     *More info:* [Config Params](http://kafka.apache.org/08/configuration.html)
    
