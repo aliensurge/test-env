@@ -53,27 +53,44 @@ Kafka nodes are typically deployed as part of the **streaming layer**.
     ```shell
     bin/zookeeper-server-start.sh config/zookeeper.properties
     ```
+    ![Screenshot](images/kafka_poc_images/Picture1.png)
+    
 5. Start the brokers in seperate shells:
     
     ```shell
     env JMX_PORT=9999  bin/kafka-server-start.sh config/server1.properties
     ```
-6. Create a kafka topic (with replication factor of 3):
+    ![Screenshot](images/kafka_poc_images/Picture2.png)
+
+6. Create a kafka topic:
 
     ```shell
     bin/kafka-create-topic.sh --topic mytopic --replica 1 --zookeeper localhost:2181
     ```
+
+    ![Screenshot](images/kafka_poc_images/Picture3.png)
+
 7. Send test messages (producer):
     
     ```shell
     bin/kafka-console-producer.sh --broker-list localhost:9092 --sync --topic mytopic
     ```
+
+    ![Screenshot](images/kafka_poc_images/Picture4.png)
+
 8. Start a consumer and recieve data:
     
     ```shell
     bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic mytopic --from-beginning
     ```
     Note: `--from-beginning` will read data from entire topic
+
+   ![Screenshot](images/kafka_poc_images/Picture5.png)
+   
+   Any new data coming in from producer will be visible on consumer
+
+   ![Screenshot](images/kafka_poc_images/Picture6.png)
+
 
 ## Kafka Threat Analyzer ##
 
@@ -107,6 +124,7 @@ Paste these sample JSON logs:
 {"host": "endpoint03", "threat": "exploit_attempt", "severity": "critical"}
 {"host": "endpoint04", "threat": "brute_force_attempt", "severity": "critical"}
 ```
+![Screenshot](images/kafka_poc_images/Picture8.png)
 
 Press `Ctrl+D` to exit the producer.
 
@@ -171,6 +189,8 @@ You should see alerts like:
 [ALERT] Host: endpoint03 | Threat: exploit_attempt | Severity: CRITICAL
 [ALERT] Host: endpoint04 | Threat: brute_force_attempt | Severity: CRITICAL
 ```
+![Screenshot](images/kafka_poc_images/Picture9.png)
+
 
 Malformed JSONs will be caught:
 
