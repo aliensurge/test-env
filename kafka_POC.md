@@ -30,23 +30,6 @@ Kafka nodes are typically deployed as part of the **streaming layer**.
 
 ## Kafka POC – Local Setup (Single Node)
 
-### Step 1: Install Java
-
-Kafka requires Java 8 or higher.
-
-Check:
-```bash
-java -version
-```
-If not available, download and install Kafka
-
-```bash
-wget https://downloads.apache.org/kafka/3.6.0/kafka_2.13-3.6.0.tgz
-tar -xzf kafka_2.13-3.6.0.tgz
-cd kafka_2.13-3.6.0
-```
-
-
 1. Download and Install Kafka
     ```bash
     wget https://downloads.apache.org/kafka/3.6.0/kafka_2.13-3.6.0.tgz
@@ -73,29 +56,30 @@ cd kafka_2.13-3.6.0
 
     ```
     *More info:* [Config Params](http://kafka.apache.org/08/configuration.html)
-3. Start Zookeeper (if not running):
+   
+4. Start Zookeeper (if not running):
     
     ```shell
     bin/zookeeper-server-start.sh config/zookeeper.properties
     ```
-4. Start the brokers in seperate shells:
+5. Start the brokers in seperate shells:
     
     ```shell
     env JMX_PORT=9999  bin/kafka-server-start.sh config/server1.properties
     env JMX_PORT=10000 bin/kafka-server-start.sh config/server2.properties
     env JMX_PORT=10001 bin/kafka-server-start.sh config/server3.properties
     ```
-5. Create a kafka topic (with replication factor of 3):
+6. Create a kafka topic (with replication factor of 3):
 
     ```shell
     bin/kafka-create-topic.sh --topic mytopic --replica 3 --zookeeper localhost:2181
     ```
-6. Send test messages (producer):
+7. Send test messages (producer):
     
     ```shell
     bin/kafka-console-producer.sh --broker-list localhost:9092,localhost:9093,localhost:9094 --sync --topic mytopic
     ```
-7. Start a consumer and recieve data:
+8. Start a consumer and recieve data:
     
     ```shell
     bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic mytopic --from-beginning
