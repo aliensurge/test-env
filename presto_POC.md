@@ -230,6 +230,7 @@ SELECT _message FROM "threat-events" LIMIT 10;
 
 <img width="944" height="360" alt="image" src="https://github.com/user-attachments/assets/d3b488c4-f1c2-449b-971e-1f3e758bb8c6" />
 
+--- 
 
 This POC shows how Presto can be used to query real-time data from Kafka using simple SQL. It highlights how powerful Presto is when it comes to exploring streaming data without needing to write custom consumers or ETL jobs.
 
