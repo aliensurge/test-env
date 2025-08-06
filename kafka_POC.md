@@ -43,16 +43,8 @@ Kafka nodes are typically deployed as part of the **streaming layer**.
     brokerid=1
     port=9092
     log.dir=/tmp/kafka-logs-1
+    zookeeper.connect=localhost:2181
     
-    #config/server2.properties
-    brokerid=2
-    port=9093
-    log.dir=/tmp/kafka-logs-2
-    
-    #config/server3.properties
-    brokerid=3
-    port=9094
-    log.dir=/tmp/kafka-logs-3
     ```
     *More info:* [Config Params](http://kafka.apache.org/08/configuration.html)
    
@@ -65,18 +57,16 @@ Kafka nodes are typically deployed as part of the **streaming layer**.
     
     ```shell
     env JMX_PORT=9999  bin/kafka-server-start.sh config/server1.properties
-    env JMX_PORT=10000 bin/kafka-server-start.sh config/server2.properties
-    env JMX_PORT=10001 bin/kafka-server-start.sh config/server3.properties
     ```
 6. Create a kafka topic (with replication factor of 3):
 
     ```shell
-    bin/kafka-create-topic.sh --topic mytopic --replica 3 --zookeeper localhost:2181
+    bin/kafka-create-topic.sh --topic mytopic --replica 1 --zookeeper localhost:2181
     ```
 7. Send test messages (producer):
     
     ```shell
-    bin/kafka-console-producer.sh --broker-list localhost:9092,localhost:9093,localhost:9094 --sync --topic mytopic
+    bin/kafka-console-producer.sh --broker-list localhost:9092 --sync --topic mytopic
     ```
 8. Start a consumer and recieve data:
     
@@ -85,6 +75,222 @@ Kafka nodes are typically deployed as part of the **streaming layer**.
     ```
     Note: `--from-beginning` will read data from entire topic
 
+## Kafka Threat Analyzer ##
+
+This proof of concept demonstrates how to use Apache Kafka to stream simulated threat logs and analyze them using a custom Python script. It mimics how Uptycs might consume logs from Kafka and analyze them using EventSQL or AlertSQL-like logic.
+
+Install the required Python package:
+
+```bash
+pip3 install kafka-python
+```
+
+### Step 1: Create Kafka Topic
+
+```bash
+bin/kafka-topics.sh --create --topic threat-events --bootstrap-server localhost:9092
+```
+
+### Step 2: Simulate Threat Logs via Kafka Producer
+
+Start the Kafka console producer:
+
+```bash
+sudo bin/kafka-console-producer.sh --broker-list localhost:9092 --topic threat-events
+```
+
+Paste these sample JSON logs:
+
+```json
+{"host": "endpoint01", "threat": "malware.exe", "severity": "high"}
+{"host": "endpoint02", "threat": "unknown_process", "severity": "low"}
+{"host": "endpoint03", "threat": "exploit_attempt", "severity": "critical"}
+{"host": "endpoint04", "threat": "brute_force_attempt", "severity": "critical"}
+```
+
+Press `Ctrl+D` to exit the producer.
+
+### Step 3: Verify Kafka Received the Logs
+
+```bash
+sudo bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic threat-events --from-beginning
+```
+
+You should see the same logs replayed in the console.
+
+### Step 4: Create the Python Analyzer Script
+
+Save the following as `threat_analyzer.py`:
+
+```python
+from kafka import KafkaConsumer
+import json
+
+# Kafka consumer initialization
+consumer = KafkaConsumer(
+    'threat-events',
+    bootstrap_servers='localhost:9092',
+    auto_offset_reset='earliest',
+    enable_auto_commit=True,
+    group_id='threat-analyzer-group',
+    value_deserializer=lambda m: m.decode('utf-8')
+)
+
+print("[+] Listening for threat logs...\n")
+
+for message in consumer:
+    try:
+        data = json.loads(message.value)
+
+        host = data.get("host", "Unknown")
+        threat = data.get("threat", "Unknown")
+        severity = data.get("severity", "Unknown").lower()
+
+        if severity == "high":
+            print(f"[ALERT] Host: {host} | Threat: {threat} | Severity: HIGH")
+        elif severity == "critical":
+            print(f"[ALERT] Host: {host} | Threat: {threat} | Severity: CRITICAL")
+        else:
+            print(f"[DEBUG] Host: {host} | Threat: {threat} | Severity: {severity}")
+
+    except json.JSONDecodeError:
+        print(f"[ERROR] Received malformed JSON: {message.value}")
+```
+
+### Step 5: Run the Threat Analyzer
+
+```bash
+sudo python3 threat_analyzer.py
+```
+
+You should see alerts like:
+
+```text
+[ALERT] Host: endpoint01 | Threat: malware.exe | Severity: HIGH
+[DEBUG] Host: endpoint02 | Threat: unknown_process | Severity: low
+[ALERT] Host: endpoint03 | Threat: exploit_attempt | Severity: CRITICAL
+[ALERT] Host: endpoint04 | Threat: brute_force_attempt | Severity: CRITICAL
+```
+
+Malformed JSONs will be caught:
+
+```text
+[ERROR] Received malformed JSON: 
+```
+
+✅ Done. You’ve successfully simulated a minimal Kafka log analysis workflow.
+
+# 🛡️ Kafka Threat Analyzer (Mini POC)
+
+This proof of concept demonstrates how to use Apache Kafka to stream simulated threat logs and analyze them using a custom Python script. It mimics how Uptycs might consume logs from Kafka and analyze them using EventSQL or AlertSQL-like logic.
+
+## ⚙️ Prerequisites
+
+- Apache Kafka installed and running
+- Python 3
+- Kafka Python library
+
+Install the required Python package:
+
+```bash
+pip3 install kafka-python
+```
+
+## 🛠️ Step-by-Step Setup
+
+### Step 1: Create Kafka Topic
+
+```bash
+bin/kafka-topics.sh --create --topic threat-events --bootstrap-server localhost:9092
+```
+
+### Step 2: Simulate Threat Logs via Kafka Producer
+
+Start the Kafka console producer:
+
+```bash
+sudo bin/kafka-console-producer.sh --broker-list localhost:9092 --topic threat-events
+```
+
+Paste these sample JSON logs:
+
+```json
+{"host": "endpoint01", "threat": "malware.exe", "severity": "high"}
+{"host": "endpoint02", "threat": "unknown_process", "severity": "low"}
+{"host": "endpoint03", "threat": "exploit_attempt", "severity": "critical"}
+{"host": "endpoint04", "threat": "brute_force_attempt", "severity": "critical"}
+```
+
+Press `Ctrl+D` to exit the producer.
+
+### Step 3: Verify Kafka Received the Logs
+
+```bash
+sudo bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic threat-events --from-beginning
+```
+
+You should see the same logs replayed in the console.
+
+### Step 4: Create the Python Analyzer Script
+
+Save the following as `threat_analyzer.py`:
+
+```python
+from kafka import KafkaConsumer
+import json
+
+# Kafka consumer initialization
+consumer = KafkaConsumer(
+    'threat-events',
+    bootstrap_servers='localhost:9092',
+    auto_offset_reset='earliest',
+    enable_auto_commit=True,
+    group_id='threat-analyzer-group',
+    value_deserializer=lambda m: m.decode('utf-8')
+)
+
+print("[+] Listening for threat logs...\n")
+
+for message in consumer:
+    try:
+        data = json.loads(message.value)
+
+        host = data.get("host", "Unknown")
+        threat = data.get("threat", "Unknown")
+        severity = data.get("severity", "Unknown").lower()
+
+        if severity == "high":
+            print(f"[ALERT] Host: {host} | Threat: {threat} | Severity: HIGH")
+        elif severity == "critical":
+            print(f"[ALERT] Host: {host} | Threat: {threat} | Severity: CRITICAL")
+        else:
+            print(f"[DEBUG] Host: {host} | Threat: {threat} | Severity: {severity}")
+
+    except json.JSONDecodeError:
+        print(f"[ERROR] Received malformed JSON: {message.value}")
+```
+
+### Step 5: Run the Threat Analyzer
+
+```bash
+sudo python3 threat_analyzer.py
+```
+
+You should see alerts like:
+
+```text
+[ALERT] Host: endpoint01 | Threat: malware.exe | Severity: HIGH
+[DEBUG] Host: endpoint02 | Threat: unknown_process | Severity: low
+[ALERT] Host: endpoint03 | Threat: exploit_attempt | Severity: CRITICAL
+[ALERT] Host: endpoint04 | Threat: brute_force_attempt | Severity: CRITICAL
+```
+
+Malformed JSONs will be caught:
+
+```text
+[ERROR] Received malformed JSON: 
+```
+This demonstrates that Python can successfully read messages from Kafka topics. A practical example would be implementing rule-based matching, where specific tags or keywords are defined in Python to detect relevant events. Once a match is found, the data can either be published to a new Kafka topic (e.g., matched_hits), routed to a storage destination such as an S3 bucket or HDFS, or sent to another processing endpoint.
 
 
 
