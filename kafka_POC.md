@@ -185,5 +185,6 @@ This demonstrates that Python can successfully read messages from Kafka topics. 
 Next POC:  Simulate Query Flow with Presto
 
 Where: Data Flows to Presto
+
 Test: Output Kafka data to a CSV/Parquet file → ingest into Presto or SQLite → run queries
 
