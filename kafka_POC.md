@@ -7,10 +7,14 @@ Apache Kafka is a distributed event streaming platform used to build real-time d
 
 ### What is Kafka?
 Kafka acts as a **publish-subscribe messaging system**, where:
-- **Producers** publish data to **topics**.
-- **Consumers** subscribe to those topics to read data.
-- Kafka **brokers** handle the storage and distribution of these messages.
-- **Zookeeper** coordinates and manages broker state.
+- **Producer**: Sends messages to topics  
+- **Consumer**: Subscribes to topics and reads messages  
+- **Broker**: Kafka server that handles reads/writes  
+- **Topic**: Logical channel of messages, split into partitions  
+- **Partition**: Ordered, immutable sequence of messages  
+- **Consumer Group**: Set of consumers sharing a subscription load  
+- **Offset**: Position of a message in a partition  
+
 
 ### Why Kafka in Uptycs Architecture?
 
@@ -33,3 +37,71 @@ Kafka requires Java 8 or higher.
 Check:
 ```bash
 java -version
+```
+If not available, download and install Kafka
+
+```bash
+wget https://downloads.apache.org/kafka/3.6.0/kafka_2.13-3.6.0.tgz
+tar -xzf kafka_2.13-3.6.0.tgz
+cd kafka_2.13-3.6.0
+```
+
+
+1. Download and Install Kafka
+    ```bash
+    wget https://downloads.apache.org/kafka/3.6.0/kafka_2.13-3.6.0.tgz
+    tar -xzf kafka_2.13-3.6.0.tgz
+    cd kafka_2.13-3.6.0
+    ```
+2. Configure Brokers:
+    
+    ```
+    #config/server1.properties
+    brokerid=1
+    port=9092
+    log.dir=/tmp/kafka-logs-1
+    
+    #config/server2.properties
+    brokerid=2
+    port=9093
+    log.dir=/tmp/kafka-logs-2
+    
+    #config/server3.properties
+    brokerid=3
+    port=9094
+    log.dir=/tmp/kafka-logs-3
+
+    ```
+    *More info:* [Config Params](http://kafka.apache.org/08/configuration.html)
+3. Start Zookeeper (if not running):
+    
+    ```shell
+    bin/zookeeper-server-start.sh config/zookeeper.properties
+    ```
+4. Start the brokers in seperate shells:
+    
+    ```shell
+    env JMX_PORT=9999  bin/kafka-server-start.sh config/server1.properties
+    env JMX_PORT=10000 bin/kafka-server-start.sh config/server2.properties
+    env JMX_PORT=10001 bin/kafka-server-start.sh config/server3.properties
+    ```
+5. Create a kafka topic (with replication factor of 3):
+
+    ```shell
+    bin/kafka-create-topic.sh --topic mytopic --replica 3 --zookeeper localhost:2181
+    ```
+6. Send test messages (producer):
+    
+    ```shell
+    bin/kafka-console-producer.sh --broker-list localhost:9092,localhost:9093,localhost:9094 --sync --topic mytopic
+    ```
+7. Start a consumer and recieve data:
+    
+    ```shell
+    bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic mytopic --from-beginning
+    ```
+    Note: `--from-beginning` will read data from entire topic
+
+
+
+
