@@ -65,6 +65,8 @@ source ~/.bashrc
 ```bash
 spark-shell
 ```
+<img width="1101" height="328" alt="image" src="https://github.com/user-attachments/assets/172ae473-626f-4db6-a721-5dc7f00bf507" />
+
 
 You should see the Spark shell prompt indicating successful setup.
 
@@ -126,6 +128,8 @@ Expected output:
 +---------+-----+
 ```
 
+<img width="1107" height="1028" alt="image" src="https://github.com/user-attachments/assets/6fcdefab-1a76-45d7-8157-58a30a37ab17" />
+
 ---
 
 # Real-Time Threat Scoring Engine (Spark + Kafka)
@@ -178,8 +182,8 @@ Kafka Topic: `threat-events`
 
 ```bash
 # Start Kafka and Zookeeper as before
-bin/kafka-topics.sh --create --topic threat-events --bootstrap-server localhost:9092
-bin/kafka-topics.sh --create --topic threat-scores --bootstrap-server localhost:9092
+bin/zookeeper-server-start.sh config/zookeeper.properties
+bin/kafka-server-start.sh config/server.properties
 ```
 
 ---
@@ -190,7 +194,7 @@ bin/kafka-topics.sh --create --topic threat-scores --bootstrap-server localhost:
 bin/kafka-console-producer.sh --broker-list localhost:9092 --topic threat-events
 ```
 
-Paste the sample logs above. Press `Ctrl+D` when done.
+Data already in from Kafka POC!
 
 ---
 
@@ -250,6 +254,16 @@ query.awaitTermination()
 
 ### Step 4: Run the Scoring Script
 
+Install dependencies for kafka connector
+
+```bash
+spark-submit \
+  --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 \
+  spark_threat_scoring.py
+```
+
+Run script to start scoring data in threat-events in Kafka and output data to new topic threat-scores
+
 ```bash
 python3 spark_threat_scoring.py
 ```
@@ -261,6 +275,7 @@ python3 spark_threat_scoring.py
 ```bash
 bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic threat-scores --from-beginning
 ```
+<img width="815" height="158" alt="image" src="https://github.com/user-attachments/assets/8058690f-1ed6-4235-8b41-ecbe14373c11" />
 
 Sample output:
 
