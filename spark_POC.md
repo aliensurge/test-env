@@ -40,9 +40,9 @@ java -version
 ### Step 2: Download and Install Apache Spark
 
 ```bash
-wget https://dlcdn.apache.org/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz
-tar -xzf spark-3.5.1-bin-hadoop3.tgz
-mv spark-3.5.1-bin-hadoop3 spark
+wget https://dlcdn.apache.org/spark/spark-3.5.6/spark-3.5.6-bin-hadoop3.tgz
+tar -xzf spark-3.5.6-bin-hadoop3.tgz
+mv spark-3.5.6-bin-hadoop3.tgz.1 spark
 ```
 
 ### Step 3: Set Environment Variables
