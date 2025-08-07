@@ -42,7 +42,7 @@ java -version
 ```bash
 wget https://dlcdn.apache.org/spark/spark-3.5.6/spark-3.5.6-bin-hadoop3.tgz
 tar -xzf spark-3.5.6-bin-hadoop3.tgz
-mv spark-3.5.6-bin-hadoop3.tgz.1 spark
+mv spark-3.5.6-bin-hadoop3.tgz spark
 ```
 
 ### Step 3: Set Environment Variables
