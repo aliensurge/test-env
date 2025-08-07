@@ -154,7 +154,7 @@ This proof-of-concept demonstrates how Apache Spark can be used to consume real-
 Install dependencies:
 
 ```bash
-pip install pyspark
+pip3 install pyspark
 ```
 
 ---
@@ -162,6 +162,8 @@ pip install pyspark
 ## Sample Kafka Threat Logs
 
 Kafka Topic: `threat-events`
+
+(Created in Kafka POC)
 
 ```json
 {"host": "endpoint01", "threat": "malware.exe", "severity": "high"}
