@@ -47,10 +47,10 @@ mv spark-3.5.6-bin-hadoop3.tgz spark
 
 ### Step 3: Set Environment Variables
 
-Add to your `~/.bashrc` or `~/.zshrc`:
+Add to  `~/.bashrc`
 
 ```bash
-export SPARK_HOME=~/spark
+export SPARK_HOME=<installation path>/spark
 export PATH=$SPARK_HOME/bin:$PATH
 ```
 
